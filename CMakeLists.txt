@@ -12,9 +12,9 @@ if(DEFINED CMAKE_CXX_STANDARD AND CMAKE_CXX_STANDARD LESS 20)
 endif()
 
 project(mcp_cpp
-    VERSION 0.1.0
-    DESCRIPTION "MCP C++ SDK"
-    LANGUAGES CXX)
+  VERSION 0.1.0
+  DESCRIPTION "MCP C++ SDK"
+  LANGUAGES CXX)
 
 # Options
 option(MCP_BUILD_EXAMPLES "Build examples" ON)
@@ -34,24 +34,28 @@ endif()
 if(MSVC)
   add_compile_options(/W4 /permissive-)
 else()
-  add_compile_options(-Wall -Wextra -Wpedantic)
+  # The not technically standard variadic args feature
+  # used happens to cause a warning with -Wpedantic,
+  # "error: token pasting of ',' and __VA_ARGS__ is a GNU extension [-Werror,-Wgnu-zero-variadic-macro-arguments]"
+  # so we turn off that warning... todo: revisit this later, clang specific, etc.
+  add_compile_options(-Wall -Wextra -Wpedantic -Wno-gnu-zero-variadic-macro-arguments)
 endif()
 
 # Library target
 add_library(mcp_cpp STATIC
-    src/mcp/version.cpp
-    src/logging/Logger.cpp
-    src/mcp/JSONParser.cpp
-    src/mcp/StdioTransport.cpp
-    src/mcp/InMemoryTransport.cpp
-    src/mcp/SharedMemoryTransport.cpp
-    src/mcp/HTTPTransport.cpp
-    src/mcp/HTTPServer.cpp
-    src/mcp/Client.cpp
-    src/mcp/Server.cpp
-    src/mcp/auth/OAuthClient.cpp
-    src/mcp/auth/OAuth2ClientCredentialsAuth.cpp
-    src/mcp/auth/ServerAuth.cpp
+  src/mcp/version.cpp
+  src/logging/Logger.cpp
+  src/mcp/JSONParser.cpp
+  src/mcp/StdioTransport.cpp
+  src/mcp/InMemoryTransport.cpp
+  src/mcp/SharedMemoryTransport.cpp
+  src/mcp/HTTPTransport.cpp
+  src/mcp/HTTPServer.cpp
+  src/mcp/Client.cpp
+  src/mcp/Server.cpp
+  src/mcp/auth/OAuthClient.cpp
+  src/mcp/auth/OAuth2ClientCredentialsAuth.cpp
+  src/mcp/auth/ServerAuth.cpp
 )
 add_library(mcp::cpp ALIAS mcp_cpp)
 
@@ -67,11 +71,11 @@ endif()
 
 # Public headers
 target_include_directories(mcp_cpp
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 # HTTP Transport dependencies: header-only Boost (Beast/Asio) + OpenSSL
